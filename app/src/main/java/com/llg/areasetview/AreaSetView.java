@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,8 +20,8 @@ import java.util.HashSet;
 public class AreaSetView extends View {
 
     //边上的格子数
-    private int countX = 20;
-    private int countY = 20;
+    private int countX;
+    private int countY;
 
     private int width;
     private int height;
@@ -41,16 +42,32 @@ public class AreaSetView extends View {
 
     private HashSet<Point> currentPoint = new HashSet<>();
 
+    /**
+     * 设置总区域 x,y方向的数目
+     *
+     * @param x 横向的区域块数
+     * @param y 纵向的区域块数
+     */
     public void setXYCount(int x, int y) {
         this.countX = x;
         this.countY = y;
     }
 
-    public void setSelectRect(HashSet<Point> selectRect) {
+    /**
+     * 设置选中的区域位置
+     *
+     * @param selectRect 选中的区域位置
+     */
+    public void setSelectArea(HashSet<Point> selectRect) {
         this.selectPoint = selectRect;
     }
 
-    public HashSet<Point> getSelectRect() {
+    /**
+     * 获取用户操作后的数据
+     *
+     * @return 用户选择的区域数据
+     */
+    public HashSet<Point> getSelectArea() {
         return selectPoint;
     }
 
@@ -75,7 +92,7 @@ public class AreaSetView extends View {
         mLinePaint.setStrokeWidth(0);
 
         mSelectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mSelectPaint.setColor(getResources().getColor(R.color.colorPrimary));
+        mSelectPaint.setColor(getResources().getColor(R.color.area_color));
         mSelectPaint.setStyle(Paint.Style.FILL);
 
         mUnSelectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -84,28 +101,53 @@ public class AreaSetView extends View {
 
         mGestureDetector = new GestureDetector(context, new SimpleGestureDetector());
         mGestureDetector.setIsLongpressEnabled(false);
-
-        selectPoint.add(new Point(1,2));
-        selectPoint.add(new Point(2,4));
-        selectPoint.add(new Point(4,16));
-        selectPoint.add(new Point(16,8));
-        selectPoint.add(new Point(19,10));
-        selectPoint.add(new Point(8,2));
-
-
     }
 
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int measureWidth = MeasureSpec.getSize(widthMeasureSpec);
-        int measureHeigth = MeasureSpec.getSize(heightMeasureSpec);
-        gridWidth = measureWidth / countX;
-        gridHeight = measureHeigth / countY;
-
-        setMeasuredDimension(gridWidth * countX, gridHeight * countY);
+        int width = measureWidth(widthMeasureSpec);
+        int height = measureHeight(heightMeasureSpec);
+        setMeasuredDimension(width, height);
     }
+
+    private int measureWidth(int measureSpec) {
+        int result = 800;
+        int specMode = MeasureSpec.getMode(measureSpec);
+        int specSize = MeasureSpec.getSize(measureSpec);
+        switch (specMode) {
+            case MeasureSpec.UNSPECIFIED:
+                result = specSize;
+                break;
+            case MeasureSpec.AT_MOST:
+                result = Math.max(result, specSize);
+                break;
+            case MeasureSpec.EXACTLY:
+                result = specSize;
+                break;
+        }
+        return result;
+    }
+
+    private int measureHeight(int measureSpec) {
+        int result = 500;
+        int specMode = MeasureSpec.getMode(measureSpec);
+        int specSize = MeasureSpec.getSize(measureSpec);
+        switch (specMode) {
+            case MeasureSpec.UNSPECIFIED:
+                result = specSize;
+                break;
+            case MeasureSpec.AT_MOST:
+                result = Math.max(result, specSize);
+                break;
+            case MeasureSpec.EXACTLY:
+                result = specSize;
+                break;
+        }
+        return result;
+    }
+
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -122,25 +164,34 @@ public class AreaSetView extends View {
         drawGridLine(canvas);
     }
 
-
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        width = w;
-        height = h;
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        width = getWidth() - getPaddingLeft() - getPaddingRight();
+        height = getHeight() - getPaddingTop() - getPaddingBottom();
+        gridWidth = (int) (width / countX);
+        gridHeight = (int) (height / countY);
+
+        //表示View中可以绘制区域的四个点，它们的坐标是相对坐标
+        mLeft = getPaddingLeft();
+        mTop = getPaddingTop();
     }
+
+    private int mLeft;
+    private int mTop;
 
     private void drawGridLine(Canvas canvas) {
         for (int i = 1; i < countX; i++) {
-            canvas.drawLine(gridWidth * i, 0, gridWidth * i, height, mLinePaint);
+            canvas.drawLine(mLeft+gridWidth * i, mTop, mLeft+gridWidth * i, height, mLinePaint);
         }
         for (int j = 1; j < countY; j++) {
-            canvas.drawLine(0, gridHeight * j, width, gridHeight * j, mLinePaint);
+            canvas.drawLine(mLeft, gridHeight * j+mTop, width, gridHeight * j+mTop, mLinePaint);
         }
     }
 
     /**
      * 绘制已经被选中的区域
+     *
      * @param canvas
      */
     private void drawSelectArea(Canvas canvas) {
@@ -159,6 +210,7 @@ public class AreaSetView extends View {
 
     /**
      * 绘制正在选取的区域
+     *
      * @param canvas
      */
     private void drawCurrentArea(Canvas canvas) {
@@ -187,6 +239,10 @@ public class AreaSetView extends View {
             }
         }
         invalidate();
+    }
+
+    public boolean isEmpty() {
+        return selectPoint.isEmpty();
     }
 
     @Override
