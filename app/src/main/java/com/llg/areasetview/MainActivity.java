@@ -1,8 +1,10 @@
 package com.llg.areasetview;
 
 import android.graphics.Point;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 
 import java.util.HashSet;
 
@@ -15,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mAreaSetView = findViewById(R.id.area_set_view);
         //设置网格的x,y方向的数目
-        mAreaSetView.setXYCount(50,40);
+        mAreaSetView.setXYCount(30,20);
 
         //模拟选中的数据
         HashSet<Point> selectedArea = new HashSet<>();

@@ -89,7 +89,7 @@ public class AreaSetView extends View {
     private void init(Context context) {
         mLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mLinePaint.setColor(Color.BLACK);
-        mLinePaint.setStrokeWidth(0);
+        mLinePaint.setStyle(Paint.Style.STROKE);
 
         mSelectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mSelectPaint.setColor(getResources().getColor(R.color.area_color));
@@ -107,9 +107,11 @@ public class AreaSetView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int width = measureWidth(widthMeasureSpec);
-        int height = measureHeight(heightMeasureSpec);
-        setMeasuredDimension(width, height);
+        int measureWidth = measureWidth(widthMeasureSpec);
+        int measureHeight = measureHeight(heightMeasureSpec);
+        int gridWidth = measureWidth / countX;
+        int gridHeight = measureHeight / countY;
+        setMeasuredDimension(gridWidth * countX, gridHeight * countY);
     }
 
     private int measureWidth(int measureSpec) {
@@ -169,8 +171,8 @@ public class AreaSetView extends View {
         super.onLayout(changed, left, top, right, bottom);
         width = getWidth() - getPaddingLeft() - getPaddingRight();
         height = getHeight() - getPaddingTop() - getPaddingBottom();
-        gridWidth = (int) (width / countX);
-        gridHeight = (int) (height / countY);
+        gridWidth = width / countX;
+        gridHeight = height / countY;
 
         //表示View中可以绘制区域的四个点，它们的坐标是相对坐标
         mLeft = getPaddingLeft();
@@ -181,11 +183,11 @@ public class AreaSetView extends View {
     private int mTop;
 
     private void drawGridLine(Canvas canvas) {
-        for (int i = 1; i < countX; i++) {
-            canvas.drawLine(mLeft+gridWidth * i, mTop, mLeft+gridWidth * i, height, mLinePaint);
+        for (int i =0; i <= countX; i++) {
+            canvas.drawLine(gridWidth * i, mTop, gridWidth * i, height, mLinePaint);
         }
-        for (int j = 1; j < countY; j++) {
-            canvas.drawLine(mLeft, gridHeight * j+mTop, width, gridHeight * j+mTop, mLinePaint);
+        for (int j = 0; j <= countY; j++) {
+            canvas.drawLine(mLeft, gridHeight * j, width, gridHeight * j, mLinePaint);
         }
     }
 
