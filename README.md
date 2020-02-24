@@ -9,7 +9,7 @@
 
 - 设置布局，该控件本身透明可以覆盖在上层使用。
 
-  ```` xml
+```xml
   <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -28,12 +28,11 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true"/>
 </RelativeLayout>
-  
-  ```
+```
 
 - 初始化设置数据
 
-```` java
+```java
  setContentView(R.layout.activity_main);
         mAreaSetView = findViewById(R.id.area_set_view);
         //设置网格的x,y方向的数目
