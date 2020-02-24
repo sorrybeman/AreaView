@@ -1,7 +1,7 @@
 # AreaSetView
   > 一个选取网格范围的控件，效果如下
 
-  ![GIF](gif\GIF.gif)
+  ![GIF](https://github.com/looogen/AreaSetView/blob/master/gif/GIF.gif)
 
   **使用方式** 
 
