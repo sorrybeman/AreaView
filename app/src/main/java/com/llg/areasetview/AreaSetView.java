@@ -169,25 +169,15 @@ public class AreaSetView extends View {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        width = getWidth() - getPaddingLeft() - getPaddingRight();
-        height = getHeight() - getPaddingTop() - getPaddingBottom();
-        gridWidth = width / countX;
-        gridHeight = height / countY;
-
-        //表示View中可以绘制区域的四个点，它们的坐标是相对坐标
-        mLeft = getPaddingLeft();
-        mTop = getPaddingTop();
+        gridWidth = getWidth() / countX;
+        gridHeight = getHeight() / countY;
     }
-
-    private int mLeft;
-    private int mTop;
-
     private void drawGridLine(Canvas canvas) {
         for (int i =0; i <= countX; i++) {
-            canvas.drawLine(gridWidth * i, mTop, gridWidth * i, height, mLinePaint);
+            canvas.drawLine(gridWidth * i, 0, gridWidth * i, getHeight(), mLinePaint);
         }
         for (int j = 0; j <= countY; j++) {
-            canvas.drawLine(mLeft, gridHeight * j, width, gridHeight * j, mLinePaint);
+            canvas.drawLine(0, gridHeight * j, getWidth(), gridHeight * j, mLinePaint);
         }
     }
 
